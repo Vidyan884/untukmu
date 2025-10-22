@@ -16,7 +16,7 @@
       max-width: 900px;
       margin: 40px auto;
       padding: 20px;
-      background: rgba(255, 255, 255, 0.85);
+      background: rgba(255, 255, 255, 0.9);
       border-radius: 20px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.1);
     }
@@ -27,44 +27,78 @@
       text-align: center;
       font-size: 2.6em;
       color: #ff3e6c;
+      margin-bottom: 20px;
     }
 
-    .login-container input {
-      width: 100%;
-      padding: 10px;
+    .fade-enter {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    .fade-enter-active {
+      opacity: 1;
+      transform: translateY(0);
+      transition: all 0.6s ease;
+    }
+    .fade-exit-active {
+      opacity: 0;
+      transform: translateY(-20px);
+      transition: all 0.5s ease;
+    }
+
+    .login-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .login-step label {
+      font-size: 1.1em;
+      color: #666;
+      font-weight: bold;
+      margin-bottom: 5px;
+      min-height: 24px;
+    }
+
+    .login-step input {
+      width: 80%;
+      max-width: 300px;
+      padding: 12px;
       border-radius: 8px;
       border: 1px solid #ccc;
-      margin-top: 10px;
+      box-sizing: border-box;
+      font-size: 1em;
     }
 
-    .login-container button {
+    .login-step button {
       background-color: #ff3e6c;
       color: white;
       border: none;
       border-radius: 8px;
-      padding: 10px 20px;
+      padding: 12px 25px;
       cursor: pointer;
       margin-top: 10px;
-      font-size: 1em;
+      font-size: 1.1em;
+      transition: background-color 0.2s ease;
     }
 
-    button:hover {
+    .login-step button:hover {
       background-color: #ff668d;
     }
 
-    .countdown {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      margin: 20px 0;
+    .login-message {
+      text-align: center;
+      color: red;
+      margin-top: 15px;
+      font-weight: bold;
     }
 
-    .count-item {
+    h2 {
       text-align: center;
-      background: #fff5f8;
-      border-radius: 10px;
-      padding: 10px 20px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      font-size: 2em;
+      color: #ff3e6c;
+      margin-top: 30px;
+      margin-bottom: 20px;
     }
 
     .gallery {
@@ -116,21 +150,60 @@
       font-size: 0.9em;
       color: #777;
     }
+
+    .ucapan-otomatis {
+      background: #fff5f8;
+      border-radius: 15px;
+      padding: 20px;
+      margin-top: 20px;
+      font-size: 1.1em;
+      color: #444;
+      line-height: 1.7;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    }
+
+    .auto-messages {
+      background: #fffdfd;
+      border-radius: 15px;
+      padding: 15px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .auto-messages p {
+      margin: 8px 0;
+      font-style: italic;
+      color: #555;
+    }
   </style>
 </head>
 <body>
 
-  <!-- LOGIN SECTION -->
+  <!-- LOGIN -->
   <div class="login-container" id="loginPage">
     <h1>🎂 Jangan Sampai Salah 🎂</h1>
-    <p style="text-align:center;color:#555;">Masukkan nama mu serta nama pacarmu dan tanggal lahirmu 💖</p>
+    <p style="text-align:center;color:#555;">Mari kita kenalan sebentar 💖</p>
 
-    <input type="text" id="namaPacar" placeholder="Nama Mu Siapa">
-    <input type="text" id="namaKamu" placeholder="Nama Pacar Mu Siapa">
-    <input type="date" id="birthdayInput">
-    <button onclick="checkLogin()">Masuk</button>
+    <div class="login-step fade-enter-active" id="step1">
+      <label for="namaPacarInput">Siapa nama pacarmu?</label>
+      <input type="text" id="namaPacarInput" placeholder="Nama pacar saya...">
+      <button onclick="nextStep(1)">Berikutnya</button>
+      <p class="login-message" id="step1Message"></p>
+    </div>
 
-    <p id="loginMessage" style="text-align:center;color:red;"></p>
+    <div class="login-step hidden" id="step2">
+      <label for="usernameInput">Sekarang, siapa nama kamu?</label>
+      <input type="text" id="usernameInput" placeholder="Nama saya...">
+      <button onclick="nextStep(2)">Berikutnya</button>
+      <p class="login-message" id="step2Message"></p>
+    </div>
+
+    <div class="login-step hidden" id="step3">
+      <label for="birthdayInput">Kapan tanggal lahirmu?</label>
+      <input type="date" id="birthdayInput">
+      <button onclick="nextStep(3)">Masuk</button>
+      <p class="login-message" id="step3Message"></p>
+    </div>
   </div>
 
   <!-- MAIN PAGE -->
@@ -138,31 +211,38 @@
     <h1 id="titleUcapan"></h1>
     <p style="text-align:center;color:#555;" id="subtitleUcapan"></p>
 
-    <div class="countdown">
-      <div class="count-item"><div id="days">00</div><div>Hari</div></div>
-      <div class="count-item"><div id="hours">00</div><div>Jam</div></div>
-      <div class="count-item"><div id="minutes">00</div><div>Menit</div></div>
-      <div class="count-item"><div id="seconds">00</div><div>Detik</div></div>
+    <div class="ucapan-otomatis">
+      💐 <b>Selamat Ulang Tahun, Tarisha Ramadhanty!</b> 💐<br><br>
+      Hari ini bukan cuma tentang bertambahnya umurmu, tapi juga tentang betapa berharganya kamu buatku.  
+      Di setiap senyummu, aku selalu menemukan alasan untuk bersyukur, karena kamu adalah hadiah terindah yang pernah datang dalam hidupku.  
+      <br><br>
+      Semoga hari ini penuh dengan tawa, cinta, dan hal-hal kecil yang membuatmu bahagia.  
+      Semoga semua impianmu satu per satu jadi nyata, dan dunia selalu berpihak pada hatimu yang lembut.  
+      <br><br>
+      <b>Selamat ulang tahun, sayang 💖✨</b><br>
+      Aku akan selalu ada — untuk mencintaimu hari ini, esok, dan selamanya 💫
     </div>
 
     <h2>Galeri Lucu 📸</h2>
     <div class="gallery">
-      <img src="foto1.jpeg" alt="dua puluh">
-      <img src="foto2.jpeg" alt="satu">
-      <img src="foto3.jpeg" alt="tahun">
+      <img src="foto1.jpeg" alt="foto1" onclick="tampilkanKata(0)">
+      <img src="foto2.jpeg" alt="foto2" onclick="tampilkanKata(1)">
+      <img src="foto3.jpeg" alt="foto3" onclick="tampilkanKata(2)">
     </div>
+
+    <div id="pesanFoto" class="auto-messages hidden"></div>
 
     <div class="playlist">
       <h2>Playlist Spesial 🎶</h2>
       <audio id="bgMusic" controls loop>
-        <source src= "Lady Gaga, Bruno Mars - Die With A Smile.mp3" type="audio/mpeg">
-        Browser kamu tidak mendukung elemen audio.
+        <source src="Lady Gaga, Bruno Mars - Die With A Smile.mp3" type="audio/mpeg">
       </audio>
     </div>
 
     <div class="messages-section">
       <h2>Ucapanku 💌</h2>
-      <textarea id="messageInput" rows="4" placeholder="selamat ulang tahun yaa sayangg semoga di umur yang sekarang ini kamu bisa tambah baik lagi, semoga apa yang kamu impikan dan apa yang kamu cita citakan tercapai semua, satu lagi semoga kedepanya makin banyak rezeki biar bisa beli semua apa yang kamu inginkan. aaminn, mungkin cukup yaa segini aja ucapan dari aku, gak panjang sihh tapi cintaku ke kamu sangatlah panjangg.wkwkwkwkwk, apa mau bilang alayyy?"></textarea><br>
+
+      <textarea id="messageInput" rows="4" placeholder="haloooo seblum baca ini jangan  lupa klick satu persatu fotomu itu yaaa hehehe, awas aja gak di baca. selamat ulang tahun sayang aku nulis ini ucapan ini dengan sepenuh hati, semoga sayanggku ini kedepanya makin baik lagi, sukses dunia akhirat, di lancarkan rezekinya, semoga yang di impikan tercapai semua, dan semoga porsce berada di garasi kamu suatu saat aamin. yaudah itu aja sihh yang bisa aku ucapin semoga doa - doa mu terkabulkan oleh Allah aaminnn. jangan oiyaa satu lagi loveeee youuuuu sayanggkuuuuuuuuuu"></textarea><br>
       <button onclick="addMessage()">Kirim</button>
       <div class="messages" id="messagesList"></div>
     </div>
@@ -171,82 +251,86 @@
   </div>
 
   <script>
-    // === LOGIN CHECK ===
-    function checkLogin() {
-      const namaPacar = document.getElementById("namaPacar").value.trim();
-      const namaKamu = document.getElementById("namaKamu").value.trim();
-      const inputDate = document.getElementById("birthdayInput").value;
-      const loginMsg = document.getElementById("loginMessage");
-      const today = new Date();
-      const target = new Date("2025-10-24");
+    const loginData = {};
+    const totalSteps = 3;
+    let currentStep = 1;
 
-      if (!namaPacar || !namaKamu || !inputDate) {
-        loginMsg.textContent = "⚠️ Lengkapi semua kolom terlebih dahulu!";
+    function nextStep(stepNum) {
+      let valid = true;
+      let msg = "";
+
+      if (stepNum === 1) {
+        const namaPacar = document.getElementById("namaPacarInput").value.trim();
+        if (!namaPacar) { valid = false; msg = "Nama pacarmu tidak boleh kosong!"; }
+        else loginData.namaPacar = namaPacar;
+      } else if (stepNum === 2) {
+        const namaKamu = document.getElementById("usernameInput").value.trim();
+        if (!namaKamu) { valid = false; msg = "Nama kamu tidak boleh kosong!"; }
+        else loginData.namaKamu = namaKamu;
+      } else if (stepNum === 3) {
+        const tgl = document.getElementById("birthdayInput").value;
+        if (!tgl) { valid = false; msg = "Tanggal lahir kamu tidak boleh kosong!"; }
+        else loginData.birthday = tgl;
+      }
+
+      const pesan = document.getElementById(`step${stepNum}Message`);
+      if (!valid) {
+        pesan.textContent = `⚠️ ${msg}`;
         return;
       }
 
-      if (today.toDateString() !== target.toDateString()) {
-        loginMsg.textContent = "⛔ Maaf, halaman ini hanya bisa dibuka pada 24 Oktober 2025.";
-        return;
-      }
+      document.getElementById(`step${stepNum}`).classList.add("hidden");
+      if (stepNum < totalSteps) {
+        document.getElementById(`step${stepNum + 1}`).classList.remove("hidden");
+      } else performLogin();
+    }
 
-      if (inputDate === "2025-10-24") {
-        // simpan nama ke localStorage
-        localStorage.setItem("namaPacar", namaPacar);
-        localStorage.setItem("namaKamu", namaKamu);
+    function performLogin() {
+      localStorage.setItem("namaPacar", loginData.namaPacar);
+      localStorage.setItem("namaKamu", loginData.namaKamu);
 
-        document.getElementById("loginPage").classList.add("hidden");
-        document.getElementById("mainPage").classList.remove("hidden");
+      document.getElementById("loginPage").classList.add("hidden");
+      document.getElementById("mainPage").classList.remove("hidden");
+      tampilkanUcapan();
 
-        tampilkanUcapan();
+      // 🎵 Tambahan: otomatis mainkan lagu
+      playMusic();
+    }
 
-        // Putar musik otomatis
-        const music = document.getElementById("bgMusic");
-        music.play().catch(() => {
-          alert("🎶 Klik tombol play untuk memutar musik!");
+    function playMusic() {
+      const audio = document.getElementById("bgMusic");
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          console.log("Autoplay dicegah oleh browser, klik tombol play untuk mulai musik.");
         });
-      } else {
-        loginMsg.textContent = "❌ Tanggal tidak sesuai! Coba lagi 💔";
       }
     }
 
-    // === UCAPAN ===
     function tampilkanUcapan() {
-      const namaPacar = localStorage.getItem("namaPacar") || "Pacarku";
-      const namaKamu = localStorage.getItem("namaKamu") || "Aku";
-
-      document.getElementById("titleUcapan").innerHTML = `Selamat Ulang Tahun, ${namaPacar} 💖`;
-      document.getElementById("subtitleUcapan").innerHTML = `Dari seseorang yang selalu mencintaimu — <b>${namaKamu}</b>`;
-      document.getElementById("namaFooter").textContent = namaKamu;
+      const pacar = localStorage.getItem("namaPacar") || "Pacarku";
+      const kamu = localStorage.getItem("namaKamu") || "Aku";
+      document.getElementById("titleUcapan").innerHTML = `Selamat Ulang Tahun, ${pacar} 💖`;
+      document.getElementById("subtitleUcapan").innerHTML = `Dari seseorang yang selalu mencintaimu — <b>${kamu}</b>`;
+      document.getElementById("namaFooter").textContent = kamu;
     }
 
-    // === COUNTDOWN ===
-    const targetDate = new Date("2025-10-24T00:00:00").getTime();
-    const timer = setInterval(() => {
-      const now = new Date().getTime();
-      const diff = targetDate - now;
+    // Pesan otomatis dari foto
+    const pesanFoto = [
+      "📸 haloo cantikk lagi ultah yaaa.... jangan lupa klick foto kedua ya.",
+      "🌼 panjang umur yaaa sayangg semoga gak emosian, wkwkowkwokwkwkwkwok.",
+      "💗 aslinya gak perlu kata kata sihh tapi soalnya kamu baik hati ke aku, jadi aku kasih dong kata kata dengan sepenuh hati."
+    ];
 
-      if (diff <= 0) {
-        clearInterval(timer);
-        document.querySelector(".countdown").innerHTML = "🎉 Selamat Ulang Tahun! 🎉";
-        return;
-      }
+    function tampilkanKata(index) {
+      const div = document.getElementById("pesanFoto");
+      div.textContent = pesanFoto[index];
+      div.classList.remove("hidden");
+    }
 
-      const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
-      const m = Math.floor((diff / (1000 * 60)) % 60);
-      const s = Math.floor((diff / 1000) % 60);
-
-      document.getElementById("days").textContent = d;
-      document.getElementById("hours").textContent = h;
-      document.getElementById("minutes").textContent = m;
-      document.getElementById("seconds").textContent = s;
-    }, 1000);
-
-    // === PESAN UCAPAN ===
+    // Ucapan custom
     const messages = JSON.parse(localStorage.getItem("messages") || "[]");
     const list = document.getElementById("messagesList");
-    renderMessages();
 
     function addMessage() {
       const input = document.getElementById("messageInput");
@@ -262,6 +346,7 @@
         .map(m => `<div class='msg'><b>${localStorage.getItem("namaKamu") || "Anon"}:</b> ${m.text}<br><small>${m.time}</small></div>`)
         .join("");
     }
+    renderMessages();
   </script>
 </body>
 </html>
